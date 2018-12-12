@@ -438,7 +438,7 @@ int main(void)
       //최대한 채운 경우 답을 출력한다.
       h->PrintAnswer(row, col);
 
-      //int maxAnswer = row * col * 0.7;
+      int maxAnswer = row * col * 0.5;
       int cnt = 0;
       for(int i = 0; i < row; i++)
       {
@@ -450,8 +450,8 @@ int main(void)
             {
                h->map[i][j] = 0;
             }
-            //if(cnt > maxAnswer)
-            //   break;
+            if(cnt > maxAnswer)
+               break;
             if(map[i][j] == -1 || map[i][j] == 99999)
                continue;
             cnt++;
