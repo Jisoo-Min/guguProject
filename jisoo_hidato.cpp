@@ -533,6 +533,7 @@ int main(void)
       cout << "원하는 퍼즐모양 번호 입력하세요 : 1 또는 2" <<endl;
       int puzzleNum = 0;
       cin >> puzzleNum;
+      
       if(puzzleNum == 1)
       {
          //첫째줄 볼록하게 만들기 
