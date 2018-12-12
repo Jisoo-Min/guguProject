@@ -143,8 +143,8 @@ void Hidato::PrintAnswer(int row, int col)
 
          else
          {
-            cout << " ";
-            os << " ";
+            cout << " -1";
+            os << " -1";
          }
 
       }
@@ -165,7 +165,7 @@ void Hidato::PrintQuestion(int row, int col)
    {
       for(int j = 0 ; j < width; j++)
       {
-         if(map[i][j] <= width*height)\
+         if(map[i][j] <= width*height)
          {
             printf("%3d", map[i][j]);
             os << map[i][j]<<" ";
@@ -173,8 +173,8 @@ void Hidato::PrintQuestion(int row, int col)
 
          else
          {
-            cout << " ";
-            os << " ";
+            cout << " -1";
+            os << " -1";
          }
 
       }
@@ -191,7 +191,7 @@ void Hidato::PrintAnswer()
    {
       for(int j = 0 ; j < width; j++)
       {
-         if(map[i][j] <= width*height)\
+         if(map[i][j] <= width*height)
          {
             printf("%3d", map[i][j]);
          }
@@ -288,7 +288,10 @@ void Hidato::FillEmpty()
                   int value = map[i + next.dy][j + next.dx];
                   //제외한 칸이면 무시한다.
                   if(value >= 99999)
+                  {
+                     map[i][j] = -1;
                      break;
+                  }
                   for(int k = 0 ; k < cnt; k++)
                   {
                      if(start == k)
@@ -527,20 +530,34 @@ int main(void)
       }
 
       //원하는 맵 입력 받기
-      cout << "Draw your map" << endl;
-      for(int i = 0 ; i < n ; i ++)
+      cout << "원하는 퍼즐모양 번호 입력하세요 : 1 또는 2" <<endl;
+      int puzzleNum = 0;
+      cin >> puzzleNum;
+      if(puzzleNum == 1)
       {
-         for(int j = 0 ;j < m; j++)
+         //첫째줄 볼록하게 만들기 
+         for(int i = 0; i < col ; i = i+2)
+         {map[0][i] = 99999;}
+         //마지막줄 볼록하게 만들기
+         for(int i = 0; i < col ; i = i+2)
+         {map[row-1][i] = 99999;}
+         //제일 왼쪽 볼록하게 만들기
+         for(int i = 0; i < row; i = i+2)
+         {map[i][0] = 99999;}
+         //제일 오른쪽 볼록하게 만들기
+         for(int i = 1; i < row; i = i+2)
+         {map[i][col-1] = 99999;}
+         cout << endl;
+      }else if(puzzleNum == 2)
+      {
+         for(int i = row*0.4; i < row - row*0.4 ; i++)
          {
-            int val = 0;
-            cin >> val;
-            if(val == 0)
-               map[i][j] = 0;
-            else
-               map[i][j] = 99999;
+            for(int j = col*0.4; j < col - col*0.4; j++)
+            {
+               map[i][j]= 99999;
+            }
          }
       }
-      cout << endl;
 
 
       //Hidato 생성
@@ -564,6 +581,10 @@ int main(void)
          h->map = newmap;
 
          int startX, startY;
+
+
+
+
          while(true)
          {
             startX = rand() % m;
@@ -591,26 +612,30 @@ int main(void)
       //최대한 채운 경우 답을 출력한다.
       h->PrintAnswer(row, col);
 
-      //int maxAnswer = row * col * 0.7;
+
+      int maxAnswer = row * col * 0.3;
       int cnt = 0;
       for(int i = 0; i < row; i++)
       {
          for(int j = 0; j < col; j++)
          {
             int randNum = (rand()%3 + 1) % 2;
-            cout << "rand" << " " << randNum << endl;
-            if(randNum == 0)
+            if((h->map[i][j] == -1) || (h->map[i][j] == 99999) || (map[i][j]== -1) || (map[i][j] == 99999))
+            {
+               h->map[i][j] = -1;
+               map[i][j] = -1;
+            }
+            else if(randNum == 0)
             {
                h->map[i][j] = 0;
+               map[i][j] = 0;
+               cnt++;
             }
-            //if(cnt > maxAnswer)
-            //   break;
-            if(map[i][j] == -1 || map[i][j] == 99999)
-               continue;
-            cnt++;
+            if(cnt > maxAnswer)
+               break;
          }
       }
-      
+      cout << endl;
       h->PrintQuestion(row, col);
 
       cout << endl <<  "0의 개수 : " << h->GetZeroCount() << endl;
