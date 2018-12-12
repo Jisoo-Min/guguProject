@@ -317,11 +317,152 @@ void Hidato::FillEmpty()
 int main(void)
 {
    int mode = 0;
-   cout << "만들 모양을 입력해 주세요.\n사각형 히다토 : 1\n육각형 히다토 : 2" << endl;
+   cout << "만들 모양을 입력해 주세요.\n사각형 히다토 : 1 \n 독특한 모양 히다토 : 2 \n육각형 히다토 : 3" << endl;
    cin >> mode;
    
    //사각형
    if(mode == 1)
+   {
+      direction_size = 8;
+      //방향 8개 설정
+      arrDirection = new Direction[8];
+      //up
+      Direction up;
+      up.dx= 0; up.dy= -1;
+      arrDirection[0] = up;
+      //upright
+      Direction upright;
+      upright.dx= 1; upright.dy= -1;
+      arrDirection[1] = upright;
+      //right
+      Direction right;
+      right.dx= 1; right.dy= 0;
+      arrDirection[2] = right;
+      //downright
+      Direction downright;
+      downright.dx= 1; downright.dy= 1;
+      arrDirection[3] = downright;
+      //down
+      Direction down;
+      down.dx= 0; down.dy= 1;
+      arrDirection[4] = down;
+      //downleft
+      Direction downleft;
+      downleft.dx= -1; downleft.dy= 1;
+      arrDirection[5] = downleft;
+      //left
+      Direction left;
+      left.dx= -1; left.dy= 0;
+      arrDirection[6] = left;
+      //upleft
+      Direction upleft;
+      upleft.dx= -1; upleft.dy= -1;
+      arrDirection[7] = upleft;
+
+      //Random Seed값 설정
+      srand((unsigned int)time(NULL));
+
+      //맵 m x 사이즈 받기
+      int m, n;
+      int row;
+      int col;
+      cout << "Enter Size" << endl;
+      cout << "Width : ";
+      cin >> m;
+      col = m;
+      cout << "Height : ";
+      cin >> n;
+      row = n;
+      //맵 메모리 할당하기
+      int **map = new int*[n];
+      for(int i = 0 ; i < n; i ++)
+         map[i] = new int[m];
+
+      //맵 0으로 초기화
+      for(int i = 0; i < n ; i ++)
+      {
+         for(int j = 0;j < m; j++)
+            map[i][j] = 0;
+      }
+
+      //원하는 맵 입력 받기
+   
+      cout << endl;
+
+
+      //Hidato 생성
+      Hidato *h;
+      h = new Hidato();
+      h->width = m;
+      h->height = n;
+      //0의 개수를 최대한 줄이기 위해 10번까지 만들어본다.
+      for(int i = 0 ; i < 10; i++)
+      {
+         //사용자가 원하는 맵을 깊은 복사를 통해 새로 구현한다.
+         int **newmap = new int*[n];
+         for(int tmp = 0; tmp < n ; tmp++)
+            newmap[tmp] = new int[m];
+
+         for(int j = 0; j < n; j++)
+         {
+            for(int k = 0 ; k < m ; k++)
+               newmap[j][k] = map[j][k];
+         }
+         h->map = newmap;
+
+         int startX, startY;
+         while(true)
+         {
+            startX = rand() % m;
+            startY = rand() % n;
+            //시작좌표가 가능한 곳이라면
+            if(map[startY][startX] == 0)
+               break;
+         }
+         //1부터 그리기 시작한다.
+         h->Generate(startX, startY, 1);
+         //다그린 후에 0을 최대한 없애기 위하여 숫자를 채운다.
+         int zeroCnt = -1;
+         while(h->GetZeroCount() != zeroCnt)
+         {
+            zeroCnt = h->GetZeroCount();
+            h->FillEmpty();
+         }
+         //0의 개수가 0이라면 탈출한다.
+         if(zeroCnt == 0)
+         {
+            cout << "출제 완료!" << endl;
+            break;
+         }
+      }
+      //최대한 채운 경우 답을 출력한다.
+      h->PrintAnswer(row, col);
+
+      //int maxAnswer = row * col * 0.7;
+      int cnt = 0;
+      for(int i = 0; i < row; i++)
+      {
+         for(int j = 0; j < col; j++)
+         {
+            int randNum = (rand()%3 + 1) % 2;
+            //cout << "rand" << " " << randNum << endl;
+            if(randNum == 0)
+            {
+               h->map[i][j] = 0;
+            }
+            //if(cnt > maxAnswer)
+            //   break;
+            if(map[i][j] == -1 || map[i][j] == 99999)
+               continue;
+            cnt++;
+         }
+      }
+      
+      h->PrintQuestion(row, col);
+
+      cout << endl <<  "0의 개수 : " << h->GetZeroCount() << endl;
+   }
+   if(mode == 2)
    {
       direction_size = 8;
       //방향 8개 설정
@@ -474,7 +615,7 @@ int main(void)
 
       cout << endl <<  "0의 개수 : " << h->GetZeroCount() << endl;
    }
-   else if(mode == 2)
+   else if(mode == 3)
    {
       direction_size = 6;
       //방향 6개 설정
