@@ -23,6 +23,7 @@
 #include <limits> 
 #include <fstream>
 #include <random>
+#include <time.h>
 using namespace std;
 int direction_size = 6;
 
@@ -44,7 +45,6 @@ class Hidato
    int height;
    int GetZeroCount();
    void Generate(int x, int y, int val);
-   void Print();
    void PrintAnswer(int row, int col);
    void PrintAnswer();
    void PrintQuestion(int row, int col);
@@ -116,17 +116,10 @@ void Hidato::Reset()
    }
 }
 
-//Hidato 문제 출력 함수
-void Hidato::Print()
-{
-   //처음 숫자와, 끝 숫자는 출력하고
-   //그 중간은 랜덤하게 특정 범위를 두고 출력한다.
-}
-
-
 //히다토 답 출력
 void Hidato::PrintAnswer(int row, int col)
 {
+   cout << endl;
    ofstream os;
    os.open("answerInput.txt");
    os << row << " " << col << endl;
@@ -135,16 +128,16 @@ void Hidato::PrintAnswer(int row, int col)
    {
       for(int j = 0 ; j < width; j++)
       {
-         if(map[i][j] <= width*height)\
+         if(map[i][j] <= width*height)
          {
-            printf("%3d", map[i][j]);
-            os << map[i][j]<<" ";
+            printf("%3d ", map[i][j]);
+            os << map[i][j]<<"   ";
          }
 
          else
          {
-            cout << " -1";
-            os << " -1";
+            cout << "   -1";
+            os << "  -1";
          }
 
       }
@@ -157,6 +150,7 @@ void Hidato::PrintAnswer(int row, int col)
 
 void Hidato::PrintQuestion(int row, int col)
 {
+   cout << endl;
    ofstream os;
    os.open("input.txt");
    os << row << " " << col << endl;
@@ -167,14 +161,14 @@ void Hidato::PrintQuestion(int row, int col)
       {
          if(map[i][j] <= width*height)
          {
-            printf("%3d", map[i][j]);
+            printf("%3d ", map[i][j]);
             os << map[i][j]<< " ";
          }
 
          else
          {
-            cout << " -1";
-            os << " -1";
+            cout << "   -1";
+            os << "  -1";
          }
 
       }
@@ -187,22 +181,28 @@ void Hidato::PrintQuestion(int row, int col)
 
 void Hidato::PrintAnswer()
 {
+   cout << endl;
+   ofstream os;
+   os.open("input.txt");
    for(int i = 0 ; i < height; i++)
    {
       for(int j = 0 ; j < width; j++)
       {
          if(map[i][j] <= width*height)
          {
-            printf("%3d", map[i][j]);
+            printf(" %3d", map[i][j]);
+            os << map[i][j]<< "  ";
          }
 
          else
          {
-            cout << " ";
+            cout << "   -1";
+            os << "  -1";
          }
 
       }
       cout << endl;
+      os << endl;
    }
 
 }
@@ -326,6 +326,8 @@ int main(void)
    //사각형
    if(mode == 1)
    {
+      clock_t begin, end;
+      begin = clock();
       direction_size = 8;
       //방향 8개 설정
       arrDirection = new Direction[8];
@@ -441,7 +443,7 @@ int main(void)
       //최대한 채운 경우 답을 출력한다.
       h->PrintAnswer(row, col);
 
-      int maxAnswer = row * col * 0.5;
+      int maxAnswer = row * col * 0.6;
       int cnt = 0;
       for(int i = 0; i < row; i++)
       {
@@ -464,6 +466,8 @@ int main(void)
       h->PrintQuestion(row, col);
 
       cout << endl <<  "0의 개수 : " << h->GetZeroCount() << endl;
+      end = clock();
+      cout << " time : " << ((float)(end-begin)/CLOCKS_PER_SEC)<< endl;
    }
    if(mode == 2)
    {
@@ -546,7 +550,7 @@ int main(void)
          for(int i = 0; i < row; i = i+2)
          {map[i][0] = 99999;}
          //제일 오른쪽 볼록하게 만들기
-         for(int i = 1; i < row; i = i+2)
+         for(int i = 0; i < row; i = i+2)
          {map[i][col-1] = 99999;}
          cout << endl;
       }else if(puzzleNum == 2)
@@ -626,7 +630,7 @@ int main(void)
                h->map[i][j] = -1;
                map[i][j] = -1;
             }
-            else if(randNum == 0)
+            else if(randNum == 0 || (h->map[i][j] != 1) || map[i][j] != 1)
             {
                h->map[i][j] = 0;
                map[i][j] = 0;
@@ -636,7 +640,9 @@ int main(void)
                break;
          }
       }
+      cout << " - " << endl;
       cout << endl;
+
       h->PrintQuestion(row, col);
 
       cout << endl <<  "0의 개수 : " << h->GetZeroCount() << endl;
